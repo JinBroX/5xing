@@ -7,23 +7,23 @@
     <!-- 使用系统字体，避免外部加载 -->
     <style>
         :root {
-            --ink: #3d2e1e;
-            --ink-2: #4d3c28;
-            --ink-3: #5a4830;
-            --gold: #d4b060;
-            --gold-light: #f0d080;
-            --gold-dim: rgba(212,176,96,0.25);
-            --copper: #c8823a;
-            --text: #f5efe5;
-            --text-dim: rgba(245,239,229,0.7);
-            --text-muted: rgba(245,239,229,0.45);
-            --mu: #5cb870;
-            --huo: #d65a4a;
-            --tu: #d4a050;
-            --jin: #d4b060;
-            --shui: #5090d0;
-            --border: rgba(212,176,96,0.25);
-            --glow: rgba(212,176,96,0.12);
+            --ink: #5a4a38;
+            --ink-2: #6b5844;
+            --ink-3: #7a6650;
+            --gold: #e8c870;
+            --gold-light: #fff4d0;
+            --gold-dim: rgba(232,200,112,0.3);
+            --copper: #d4904a;
+            --text: #fffaf0;
+            --text-dim: rgba(255,250,240,0.8);
+            --text-muted: rgba(255,250,240,0.5);
+            --mu: #6ecf80;
+            --huo: #e86a5a;
+            --tu: #e8b060;
+            --jin: #e8c870;
+            --shui: #60a0e0;
+            --border: rgba(232,200,112,0.3);
+            --glow: rgba(232,200,112,0.15);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,7 +32,7 @@
 
         body {
             font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
-            background: linear-gradient(135deg, var(--ink) 0%, #2d2218 50%, var(--ink) 100%);
+            background: linear-gradient(160deg, var(--ink) 0%, #4a3a28 50%, var(--ink) 100%);
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
@@ -46,8 +46,8 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(ellipse at 30% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
-                        radial-gradient(ellipse at 70% 80%, rgba(184,115,51,0.06) 0%, transparent 50%);
+            background: radial-gradient(ellipse at 30% 20%, rgba(232,200,112,0.12) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 80%, rgba(212,144,74,0.08) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
         }
@@ -70,7 +70,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(180deg, rgba(26,21,16,0.9) 0%, transparent 100%);
+            background: linear-gradient(180deg, rgba(60,48,32,0.85) 0%, transparent 100%);
             backdrop-filter: blur(8px);
         }
 
@@ -136,8 +136,11 @@
         .hero-bg {
             position: absolute;
             inset: 0;
-            background: linear-gradient(rgba(40,30,20,0.2) 0%, rgba(40,30,20,0.35) 100%),
-                        url('img/hero.png') center/cover no-repeat;
+            background-image: linear-gradient(rgba(60,48,32,0.15) 0%, rgba(60,48,32,0.25) 100%),
+                        url('img/hero.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         /* 太极图纹 */
@@ -1564,6 +1567,7 @@
         .nav { padding: 12px 16px; }
         .nav-logo { font-size: 1rem; }
         .nav-logo span { font-size: 0.7rem; letter-spacing: 0.3em; }
+        .hero-bg { background-attachment: scroll; }
         .hero-circle { width: 320px; height: 320px; }
         .hero-subtitle { font-size: 0.85rem; }
         .hero-desc { font-size: 0.85rem; margin-bottom: 32px; }
@@ -1597,6 +1601,7 @@
         .nav-cart { width: 40px; height: 40px; font-size: 15px; }
         .user-btn { padding: 5px 10px; font-size: 0.65rem; }
         .hero { min-height: 100vh; height: auto; padding: 80px 0 60px; }
+        .hero-bg { min-height: 100vh; background-attachment: scroll; }
         .hero-circle { width: 220px; height: 220px; opacity: 0.5; }
         .hero-title { font-size: 2.2rem !important; }
         .hero-subtitle { font-size: 0.75rem; letter-spacing: 0.2em; }
@@ -1806,6 +1811,57 @@
             <span class="cart-total-amount">¥<span id="cartTotal">0</span></span>
         </div>
         <button class="btn-gold" style="width:100%;padding:16px;font-size:0.9rem;letter-spacing:0.3em;" onclick="showCheckout()">结算 · CHECKOUT</button>
+    </div>
+</div>
+
+<!-- ======================== 登录/注册模态框 ======================== -->
+<div class="modal" id="authModal">
+    <div class="modal-box" style="max-width: 420px;">
+        <button class="modal-close" onclick="closeAuthModal()">×</button>
+
+        <!-- 登录表单 -->
+        <div id="loginForm">
+            <h2 class="modal-title">登录账号</h2>
+            <p class="modal-sub">MEMBER LOGIN</p>
+            <form id="loginFormInner">
+                <div class="mform-group">
+                    <label>用户名 · Username</label>
+                    <input type="text" id="loginUsername" required placeholder="请输入用户名">
+                </div>
+                <div class="mform-group">
+                    <label>密码 · Password</label>
+                    <input type="password" id="loginPassword" required placeholder="请输入密码">
+                </div>
+                <button type="submit" class="btn-gold" style="width:100%;padding:14px;font-size:0.85rem;letter-spacing:0.2em;margin-top:8px;">登录 · LOGIN</button>
+            </form>
+            <p style="text-align:center;margin-top:16px;color:var(--text-muted);font-size:0.8rem;">
+                还没有账号？<a href="#" onclick="showRegisterForm(event)" style="color:var(--gold);text-decoration:none;">立即注册</a>
+            </p>
+        </div>
+
+        <!-- 注册表单 -->
+        <div id="registerForm" style="display:none;">
+            <h2 class="modal-title">注册账号</h2>
+            <p class="modal-sub">MEMBER REGISTER</p>
+            <form id="registerFormInner">
+                <div class="mform-group">
+                    <label>用户名 · Username</label>
+                    <input type="text" id="regUsername" required placeholder="请输入用户名（至少3位）" minlength="3">
+                </div>
+                <div class="mform-group">
+                    <label>密码 · Password</label>
+                    <input type="password" id="regPassword" required placeholder="请输入密码（至少6位）" minlength="6">
+                </div>
+                <div class="mform-group">
+                    <label>确认密码 · Confirm</label>
+                    <input type="password" id="regPasswordConfirm" required placeholder="请再次输入密码" minlength="6">
+                </div>
+                <button type="submit" class="btn-gold" style="width:100%;padding:14px;font-size:0.85rem;letter-spacing:0.2em;margin-top:8px;">注册 · REGISTER</button>
+            </form>
+            <p style="text-align:center;margin-top:16px;color:var(--text-muted);font-size:0.8rem;">
+                已有账号？<a href="#" onclick="showLoginForm(event)" style="color:var(--gold);text-decoration:none;">立即登录</a>
+            </p>
+        </div>
     </div>
 </div>
 
@@ -2102,6 +2158,177 @@ function toggleCart() {
     document.getElementById('cartOverlay').classList.toggle('active');
 }
 
+// ======================== 用户认证 ========================
+let currentUser = null;
+let authToken = localStorage.getItem('token');
+
+// 页面加载时检查登录状态
+function checkAuthStatus() {
+    if (authToken) {
+        fetch('/api/auth/me', {
+            headers: { 'Authorization': 'Bearer ' + authToken }
+        }).then(r => r.json()).then(data => {
+            if (data.user) {
+                currentUser = data.user;
+                updateUserUI(data.user.username);
+            }
+        }).catch(() => {
+            localStorage.removeItem('token');
+            authToken = null;
+        });
+    }
+}
+
+// 更新用户UI
+function updateUserUI(username) {
+    const btn = document.getElementById('userBtn');
+    if (btn) {
+        btn.textContent = username.substring(0, 8);
+    }
+}
+
+// 打开登录模态框
+function openAuthModal() {
+    document.getElementById('authModal').classList.add('active');
+    showLoginForm();
+}
+
+// 关闭认证模态框
+function closeAuthModal() {
+    document.getElementById('authModal').classList.remove('active');
+    // 重置表单
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+    document.getElementById('loginFormInner').reset();
+    document.getElementById('registerFormInner').reset();
+}
+
+// 切换到登录表单
+function showLoginForm(e) {
+    if (e) e.preventDefault();
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+}
+
+// 切换到注册表单
+function showRegisterForm(e) {
+    if (e) e.preventDefault();
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+}
+
+// 处理登录
+document.getElementById('loginFormInner').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            localStorage.setItem('token', data.token);
+            authToken = data.token;
+            currentUser = data.user;
+            updateUserUI(data.user.username);
+            closeAuthModal();
+            showToast('登录成功');
+        } else {
+            showToast(data.error || '登录失败');
+        }
+    } catch (err) {
+        showToast('网络错误，请重试');
+    }
+});
+
+// 处理注册
+document.getElementById('registerFormInner').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const username = document.getElementById('regUsername').value;
+    const password = document.getElementById('regPassword').value;
+    const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+
+    if (password !== passwordConfirm) {
+        showToast('两次密码输入不一致');
+        return;
+    }
+
+    if (username.length < 3) {
+        showToast('用户名至少3位');
+        return;
+    }
+
+    if (password.length < 6) {
+        showToast('密码至少6位');
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            localStorage.setItem('token', data.token);
+            authToken = data.token;
+            currentUser = data.user;
+            updateUserUI(data.user.username);
+            closeAuthModal();
+            showToast('注册成功，已自动登录');
+        } else {
+            showToast(data.error || '注册失败');
+        }
+    } catch (err) {
+        showToast('网络错误，请重试');
+    }
+});
+
+// 登出
+function logout() {
+    localStorage.removeItem('token');
+    authToken = null;
+    currentUser = null;
+    const btn = document.getElementById('userBtn');
+    if (btn) {
+        btn.textContent = '登录';
+    }
+    showToast('已退出登录');
+    closeUserMenu();
+}
+
+// 切换用户菜单
+function toggleUserMenu() {
+    if (!currentUser) {
+        openAuthModal();
+        return;
+    }
+    const menu = document.getElementById('userMenu');
+    menu.classList.toggle('active');
+}
+
+// 关闭用户菜单
+function closeUserMenu() {
+    const menu = document.getElementById('userMenu');
+    if (menu) menu.classList.remove('active');
+}
+
+// 点击其他地方关闭用户菜单
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('userMenu');
+    const btn = document.getElementById('userBtn');
+    if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.remove('active');
+    }
+});
+
 // ======================== 五行测算 ========================
 function calculateWuxing() {
     const val = document.getElementById('birthdayInput').value;
@@ -2317,6 +2544,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 renderElTabs();
 renderElCarousels();
 renderCraft();
+checkAuthStatus();
 updateCartUI();
 </script>
 </body>
