@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五行 · 御灵手串</title>
+    <!-- 使用系统字体，避免外部加载 -->
+    <style>
+        :root {
+            --ink: #3d2e1e;
+            --ink-2: #4d3c28;
+            --ink-3: #5a4830;
+            --gold: #d4b060;
+            --gold-light: #f0d080;
+            --gold-dim: rgba(212,176,96,0.25);
+            --copper: #c8823a;
+            --text: #f5efe5;
+            --text-dim: rgba(245,239,229,0.7);
+            --text-muted: rgba(245,239,229,0.45);
+            --mu: #5cb870;
+            --huo: #d65a4a;
+            --tu: #d4a050;
+            --jin: #d4b060;
+            --shui: #5090d0;
+            --border: rgba(212,176,96,0.25);
+            --glow: rgba(212,176,96,0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+            background: linear-gradient(135deg, var(--ink) 0%, #2d2218 50%, var(--ink) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 全局金色光晕背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 80%, rgba(184,115,51,0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ======================== CANVAS PARTICLES ======================== */
+        #particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* ======================== NAV ======================== */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 20px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(26,21,16,0.9) 0%, transparent 100%);
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.3em;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .nav-logo span {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            display: block;
+            letter-spacing: 0.5em;
+            margin-top: -4px;
+        }
+
+        .nav-cart {
+            position: relative;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--gold);
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .nav-cart:hover {
+            background: var(--gold-dim);
+            border-color: var(--gold);
+            box-shadow: 0 0 20px var(--gold-dim);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px; right: -5px;
+            background: var(--huo);
+            color: white;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            font-size: 11px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: sans-serif;
+        }
+
+        /* ======================== HERO ======================== */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(40,30,20,0.2) 0%, rgba(40,30,20,0.35) 100%),
+                        url('img/hero.png') center/cover no-repeat;
+        }
+
+        /* 太极图纹 */
+        .hero-circle {
+            position: absolute;
+            width: 600px; height: 600px;
+            border: 1px solid rgba(201,168,76,0.08);
+            border-radius: 50%;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation: rotateSlow 60s linear infinite;
+        }
+
+        .hero-circle::before {
+            content: '';
+            position: absolute;
+            inset: 30px;
+            border: 1px solid rgba(201,168,76,0.05);
+            border-radius: 50%;
+        }
+
+        .hero-circle::after {
+            content: '';
+            position: absolute;
+            inset: 80px;
+            border: 1px solid rgba(201,168,76,0.04);
+            border-radius: 50%;
+        }
+
+        @keyframes rotateSlow {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .hero-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--gold);
+            font-size: 1rem;
+            letter-spacing: 0.4em;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeUp 1s 0.3s forwards;
+        }
+
+        .hero-title {
+            font-size: clamp(3.5rem, 8vw, 6rem);
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeUp 1s 0.5s forwards;
+        }
+
+        .hero-title em {
+            font-style: normal;
+            color: var(--gold);
+            font-weight: 400;
+        }
+
+        .hero-desc {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            letter-spacing: 0.25em;
+            margin-bottom: 52px;
+            opacity: 0;
+            animation: fadeUp 1s 0.7s forwards;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeUp 1s 0.9s forwards;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+            background-size: 200%;
+            color: var(--ink);
+            border: none;
+            padding: 14px 40px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.4s;
+        }
+
+        .btn-gold:hover {
+            background-position: right;
+            box-shadow: 0 8px 30px rgba(201,168,76,0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--border);
+            padding: 14px 40px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.4s;
+        }
+
+        .btn-outline:hover {
+            background: var(--gold-dim);
+            border-color: var(--gold);
+        }
+
+        /* 五行象征小圆点 */
+        .hero-elements {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            opacity: 0;
+            animation: fadeUp 1s 1.1s forwards;
+        }
+
+        .hero-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .hero-dot::after {
+            content: attr(data-name);
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ======================== SECTION HEADER ======================== */
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-label {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--gold);
+            font-size: 0.85rem;
+            letter-spacing: 0.5em;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 0.25em;
+            margin-bottom: 16px;
+        }
+
+        .section-line {
+            width: 48px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0 auto;
+        }
+
+        /* ======================== DIVIDER ======================== */
+        .divider {
+            position: relative;
+            z-index: 1;
+            height: 1px;
+            background: var(--border);
+            margin: 0 60px;
+        }
+
+        /* ======================== 五行展示 ======================== */
+        .elements-section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 60px;
+        }
+
+        .elements-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 900px) {
+            .elements-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .elements-section { padding: 80px 24px; }
+        }
+
+        .element-card {
+            position: relative;
+            background: var(--ink-2);
+            border: 1px solid var(--border);
+            padding: 40px 24px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            group: true;
+        }
+
+        .element-card:hover {
+            transform: translateY(-8px);
+            z-index: 2;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        /* 每个五行元素独立配色 */
+        .element-card[data-el="木"] { --el-color: var(--mu); }
+        .element-card[data-el="火"] { --el-color: var(--huo); }
+        .element-card[data-el="土"] { --el-color: var(--tu); }
+        .element-card[data-el="金"] { --el-color: var(--jin); }
+        .element-card[data-el="水"] { --el-color: var(--shui); }
+
+        .element-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--el-color, var(--gold)) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .element-card:hover::before { opacity: 0.08; }
+
+        .element-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--el-color, var(--gold));
+            transform: scaleX(0);
+            transition: transform 0.4s;
+        }
+
+        .element-card:hover::after { transform: scaleX(1); }
+
+        .el-glyph {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: var(--el-color, var(--gold));
+            margin-bottom: 20px;
+            position: relative;
+            transition: all 0.4s;
+            display: block;
+            line-height: 1;
+        }
+
+        .element-card:hover .el-glyph {
+            text-shadow: 0 0 30px var(--el-color, var(--gold));
+        }
+
+        .el-en {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .el-name {
+            font-size: 1.3rem;
+            letter-spacing: 0.15em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .el-desc {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 0.15em;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .el-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 16px;
+        }
+
+        .el-price span {
+            font-size: 0.85rem;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .el-btn {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 10px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            border-radius: 1px;
+            transition: all 0.3s;
+        }
+
+        .element-card:hover .el-btn {
+            border-color: var(--el-color, var(--gold));
+            color: var(--el-color, var(--gold));
+            background: rgba(0,0,0,0.3);
+        }
+
+        /* ======================== 测算区 ======================== */
+        .calc-section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 60px;
+            background: linear-gradient(180deg, var(--ink-2) 0%, var(--ink-3) 100%);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .calc-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .calc-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .calc-inner { grid-template-columns: 1fr; gap: 40px; }
+            .calc-section { padding: 80px 24px; }
+        }
+
+        .calc-text .label {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--gold);
+            font-size: 0.85rem;
+            letter-spacing: 0.5em;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .calc-text h2 {
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            line-height: 1.4;
+            margin-bottom: 24px;
+        }
+
+        .calc-text p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            line-height: 2;
+            letter-spacing: 0.1em;
+        }
+
+        .calc-text .traits {
+            margin-top: 32px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .trait {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+        }
+
+        .trait-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .calc-form-wrap {
+            background: linear-gradient(145deg, var(--ink-3), var(--ink-2));
+            border: 1px solid var(--border);
+            padding: 48px;
+            position: relative;
+            box-shadow: 0 0 60px rgba(201,168,76,0.08), inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .calc-form-wrap::before {
+            content: '测算';
+            position: absolute;
+            top: -12px;
+            left: 32px;
+            background: var(--ink-3);
+            padding: 0 12px;
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            color: var(--gold);
+        }
+
+        .form-row {
+            margin-bottom: 24px;
+        }
+
+        .form-row label {
+            display: block;
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .form-row input[type="date"] {
+            width: 100%;
+            background: var(--ink-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px 16px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            outline: none;
+            transition: border-color 0.3s;
+            border-radius: 1px;
+            color-scheme: dark;
+        }
+
+        .form-row input[type="date"]:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold-dim);
+        }
+
+        .calc-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #1e1a10 0%, #2a2210 100%);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 16px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.3em;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calc-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s;
+        }
+
+        .calc-btn:hover::before { transform: scaleX(1); }
+        .calc-btn:hover { color: var(--ink); }
+
+        .calc-btn span { position: relative; z-index: 1; }
+
+        /* ======================== 结果区 ======================== */
+        .result-section {
+            position: relative;
+            z-index: 1;
+            padding: 80px 60px;
+            display: none;
+        }
+
+        .result-section.active { display: block; }
+
+        .result-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* 五行雷达可视化 */
+        .result-viz {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .result-viz { grid-template-columns: 1fr; }
+            .result-section { padding: 60px 24px; }
+        }
+
+        .radar-wrap {
+            display: flex;
+            justify-content: center;
+        }
+
+        #radarCanvas {
+            max-width: 300px;
+            width: 100%;
+        }
+
+        .result-text h2 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            margin-bottom: 20px;
+        }
+
+        .result-highlight {
+            display: inline-block;
+            background: var(--gold-dim);
+            border: 1px solid var(--border);
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .result-desc {
+            color: var(--text-dim);
+            font-size: 0.875rem;
+            line-height: 2;
+            letter-spacing: 0.1em;
+            margin-bottom: 32px;
+        }
+
+        /* 五行占比条 */
+        .el-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .el-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .el-bar-label {
+            width: 24px;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            flex-shrink: 0;
+        }
+
+        .el-bar-track {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .el-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .el-bar-val {
+            width: 32px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        /* 推荐卡片 */
+        .recommend-wrap {
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, var(--ink-2), var(--ink-3));
+            padding: 40px;
+            position: relative;
+        }
+
+        .recommend-wrap::before {
+            content: 'Recommended';
+            position: absolute;
+            top: -10px;
+            left: 24px;
+            background: linear-gradient(180deg, var(--ink-2), var(--ink-3));
+            padding: 0 10px;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 0.75rem;
+            color: var(--gold);
+            letter-spacing: 0.2em;
+        }
+
+        .rec-card-inner {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background: linear-gradient(145deg, var(--ink-3), var(--ink-2));
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .rec-card-inner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .rec-img-wrap {
+            width: 200px;
+            height: 200px;
+            flex-shrink: 0;
+            overflow: hidden;
+            background: var(--ink-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rec-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .rec-img-placeholder {
+            font-size: 4rem;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rec-info h3 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            margin-bottom: 8px;
+        }
+
+        .rec-info .sub {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 16px;
+        }
+
+        .rec-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+        }
+
+        .rec-price sub { font-size: 0.9rem; font-style: normal; }
+
+        .rec-actions {
+            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* ======================== 工艺细节 ======================== */
+        .craft-section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 60px;
+            background: var(--ink-2);
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .craft-section { padding: 80px 24px; }
+        }
+
+        .craft-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+        }
+
+        @media (max-width: 900px) {
+            .craft-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        }
+
+        .craft-item {
+            position: relative;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            background: var(--ink-3);
+            cursor: default;
+        }
+
+        .craft-item-bg {
+            position: absolute;
+            inset: 0;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .craft-item:hover .craft-item-bg { transform: scale(1.06); }
+
+        .craft-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.2) 50%, transparent 100%);
+        }
+
+        .craft-label {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 32px 24px 24px;
+        }
+
+        .craft-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.75rem;
+            color: var(--gold);
+            letter-spacing: 0.3em;
+            margin-bottom: 6px;
+        }
+
+        .craft-name {
+            font-size: 1.1rem;
+            letter-spacing: 0.2em;
+        }
+
+        .craft-desc {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            margin-top: 4px;
+        }
+
+        /* 工艺颜色背景（无图片时） */
+        .craft-color-1 { background: linear-gradient(135deg, #1a1208 0%, #2d1f0a 100%); }
+        .craft-color-2 { background: linear-gradient(135deg, #0d1a0d 0%, #0a2010 100%); }
+        .craft-color-3 { background: linear-gradient(135deg, #1a0d08 0%, #2d1a0a 100%); }
+        .craft-color-4 { background: linear-gradient(135deg, #0d0d1a 0%, #0a0a2a 100%); }
+
+        /* ======================== 品牌故事 ======================== */
+        .story-section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 60px;
+            text-align: center;
+        }
+
+        .story-inner {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .story-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.8rem;
+            font-weight: 300;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .story-quote::before, .story-quote::after {
+            content: '"';
+            font-size: 5rem;
+            color: var(--gold);
+            opacity: 0.2;
+            position: absolute;
+            line-height: 1;
+        }
+
+        .story-quote::before { top: -20px; left: -20px; }
+        .story-quote::after { bottom: -40px; right: -20px; content: '"'; }
+
+        .story-source {
+            font-size: 0.8rem;
+            letter-spacing: 0.4em;
+            color: var(--text-muted);
+        }
+
+        /* ======================== FOOTER ======================== */
+        .footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border);
+            padding: 40px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--gold);
+            font-size: 1rem;
+            letter-spacing: 0.3em;
+        }
+
+        .footer-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+        }
+
+        /* ======================== 购物车侧边栏 ======================== */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(4px);
+        }
+
+        .cart-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .cart-sidebar {
+            position: fixed;
+            right: -480px;
+            top: 0;
+            width: 440px;
+            height: 100vh;
+            background: var(--ink-2);
+            border-left: 1px solid var(--border);
+            transition: right 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 600;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.active { right: 0; }
+
+        .cart-header {
+            padding: 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cart-header h2 {
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.3em;
+        }
+
+        .cart-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .cart-close:hover { color: var(--text); }
+
+        .cart-items-wrap {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 32px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .cart-item-icon {
+            width: 56px; height: 56px;
+            background: var(--ink-3);
+            border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .cart-item-name {
+            flex: 1;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+        }
+
+        .cart-item-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: var(--gold);
+        }
+
+        .cart-qty-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-btn {
+            width: 28px; height: 28px;
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .qty-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+        .cart-footer {
+            padding: 24px 32px 32px;
+            border-top: 1px solid var(--border);
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cart-total-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            color: var(--text-dim);
+        }
+
+        .cart-total-amount {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--gold);
+        }
+
+        /* ======================== 模态框 ======================== */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 800;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-box {
+            background: var(--ink-2);
+            border: 1px solid var(--border);
+            padding: 56px;
+            width: 480px;
+            max-width: 90vw;
+            position: relative;
+        }
+
+        .modal-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px; right: 24px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            margin-bottom: 8px;
+        }
+
+        .modal-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+            margin-bottom: 40px;
+        }
+
+        .mform-group {
+            margin-bottom: 20px;
+        }
+
+        .mform-group label {
+            display: block;
+            font-size: 0.72rem;
+            letter-spacing: 0.35em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .mform-group input {
+            width: 100%;
+            background: var(--ink-3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px 16px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .mform-group input:focus {
+            border-color: var(--gold);
+        }
+
+        /* ======================== 通知 ======================== */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--ink-3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px 32px;
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            z-index: 900;
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            white-space: nowrap;
+        }
+
+        .toast.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: var(--gold);
+        }
+
+        /* ======================== 滚动动画 ======================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
+                        transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ======================== 五行Tab+轮播 ======================== */
+        .el-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 56px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .el-tab {
+            flex: 1;
+            padding: 14px 12px;
+            background: var(--ink-3);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            color: var(--text-dim);
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .el-tab:hover {
+            background: var(--ink-2);
+            color: var(--text);
+        }
+
+        .el-tab.active {
+            background: var(--ink);
+            color: var(--tab-color, var(--gold));
+            border-color: var(--tab-color, var(--gold));
+            border-bottom: 1px solid var(--ink);
+            z-index: 1;
+        }
+
+        .el-carousels {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .el-carousel {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .el-carousel.active {
+            display: grid;
+        }
+
+        .prod-card {
+            background: linear-gradient(145deg, var(--ink-3), var(--ink-2));
+            border: 1px solid var(--border);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .prod-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--gold);
+            box-shadow: 0 12px 40px rgba(201,168,76,0.15), 0 0 60px rgba(201,168,76,0.08);
+        }
+
+        .prod-img-wrap {
+            position: relative;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            background: var(--ink);
+        }
+
+        .prod-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .prod-card:hover .prod-img-wrap img {
+            transform: scale(1.06);
+        }
+
+        .prod-no-img {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--ink-3), var(--ink-2));
+        }
+
+        .prod-info {
+            padding: 20px;
+        }
+
+        .prod-name {
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 4px;
+        }
+
+        .prod-mat {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.15em;
+            margin-bottom: 12px;
+        }
+
+        .prod-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .prod-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
+
+        .prod-add-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--gold);
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .prod-add-btn:hover {
+            background: var(--gold);
+            color: var(--ink);
+            border-color: var(--gold);
+        }
+        /* 用户中心按钮 */
+        .user-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 6px 16px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 1px;
+        }
+
+        .user-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .user-btn.logged-in {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .user-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--ink-2);
+            border: 1px solid var(--border);
+            min-width: 160px;
+            display: none;
+            z-index: 200;
+        }
+
+        .user-menu.active { display: block; }
+
+        .user-menu-item {
+            padding: 12px 20px;
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .user-menu-item:last-child { border-bottom: none; }
+
+        .user-menu-item:hover {
+            background: var(--ink-3);
+            color: var(--text);
+        }
+
+        /* 登录表单切换 */
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        .auth-toggle a {
+            color: var(--gold);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .auth-toggle a:hover { text-decoration: underline; }
+
+        /* 测算历史 */
+        .history-section {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .history-title {
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .history-item {
+            background: var(--ink-3);
+            border: 1px solid var(--border);
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .history-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .history-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        .history-result {
+            font-size: 0.85rem;
+            color: var(--gold);
+            letter-spacing: 0.15em;
+        }
+
+        .history-load {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-load:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .history-delete {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 8px;
+        }
+
+        .history-delete:hover { color: var(--huo); }
+
+        .no-history {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+        }
+
+    /* ======================= 全站响应式 ======================= */
+
+    /* ---------- ≤ 1024px ：平板 / 小桌面 ---------- */
+    @media (max-width: 1024px) {
+        .nav { padding: 16px 32px; }
+        .hero-circle { width: 450px; height: 450px; }
+        .elements-section { padding: 80px 32px; }
+        .calc-section { padding: 80px 32px; }
+        .craft-section { padding: 80px 32px; }
+        .story-section { padding: 80px 32px; }
+        .result-section { padding: 80px 32px; }
+        .footer { padding: 32px; }
+        .calc-inner { gap: 40px; }
+        .rec-card-inner { gap: 24px; padding: 24px; }
+        .rec-img-wrap { width: 160px; height: 160px; }
+        .modal-box { padding: 40px 32px; }
+    }
+
+    /* ---------- ≤ 768px ：大手机 / 小平板 ---------- */
+    @media (max-width: 768px) {
+        .nav { padding: 12px 16px; }
+        .nav-logo { font-size: 1rem; }
+        .nav-logo span { font-size: 0.7rem; letter-spacing: 0.3em; }
+        .hero-circle { width: 320px; height: 320px; }
+        .hero-subtitle { font-size: 0.85rem; }
+        .hero-desc { font-size: 0.85rem; margin-bottom: 32px; }
+        .hero-actions { flex-direction: column; align-items: center; gap: 12px; }
+        .btn-gold, .btn-outline { padding: 12px 28px; font-size: 0.8rem; }
+        .elements-section { padding: 60px 16px; }
+        .section-title { font-size: 1.5rem; }
+        .calc-section { padding: 60px 16px; }
+        .calc-inner { grid-template-columns: 1fr; gap: 32px; }
+        .calc-form-wrap { padding: 32px 20px; }
+        .result-section { padding: 60px 16px; }
+        .result-viz { grid-template-columns: 1fr; gap: 32px; }
+        .recommend-wrap { padding: 24px 16px; }
+        .rec-card-inner { flex-direction: column; align-items: center; text-align: center; gap: 20px; }
+        .rec-img-wrap { width: 180px; height: 180px; }
+        .rec-actions { margin-left: 0; flex-direction: row; justify-content: center; }
+        .craft-section { padding: 60px 16px; }
+        .craft-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .story-section { padding: 60px 16px; }
+        .story-quote { font-size: 1.3rem; }
+        .footer { flex-direction: column; gap: 12px; text-align: center; padding: 24px 16px; }
+        .cart-sidebar { width: 100vw; right: -100vw; }
+        .modal-box { padding: 32px 20px; width: 90vw; }
+    }
+
+    /* ---------- ≤ 480px ：小手机 ---------- */
+    @media (max-width: 480px) {
+        .nav { padding: 10px 12px; }
+        .nav-logo { font-size: 0.85rem; }
+        .nav-logo span { font-size: 0.6rem; letter-spacing: 0.2em; }
+        .nav-cart { width: 40px; height: 40px; font-size: 15px; }
+        .user-btn { padding: 5px 10px; font-size: 0.65rem; }
+        .hero { min-height: 100vh; height: auto; padding: 80px 0 60px; }
+        .hero-circle { width: 220px; height: 220px; opacity: 0.5; }
+        .hero-title { font-size: 2.2rem !important; }
+        .hero-subtitle { font-size: 0.75rem; letter-spacing: 0.2em; }
+        .hero-desc { font-size: 0.75rem; }
+        .hero-elements { gap: 12px; bottom: 32px; }
+        .hero-dot { width: 6px; height: 6px; }
+        .hero-dot::after { font-size: 0.55rem; }
+        .el-tabs { gap: 2px; margin-bottom: 24px; flex-wrap: wrap; }
+        .el-tab { padding: 10px 6px; font-size: 0.7rem; }
+        .el-carousel { grid-template-columns: 1fr; gap: 12px; }
+        .elements-section { padding: 40px 12px; }
+        .section-title { font-size: 1.3rem; }
+        .section-label { font-size: 0.75rem; }
+        .calc-section { padding: 40px 12px; }
+        .calc-text h2 { font-size: 1.5rem; }
+        .calc-text p { font-size: 0.8rem; }
+        .calc-form-wrap { padding: 24px 16px; }
+        .calc-btn { padding: 14px; font-size: 0.8rem; }
+        .result-section { padding: 40px 12px; }
+        .result-text h2 { font-size: 1.4rem; }
+        .result-desc { font-size: 0.8rem; }
+        #radarCanvas { max-width: 220px; }
+        .rec-card-inner { padding: 16px; }
+        .rec-name { font-size: 1rem; }
+        .rec-price { font-size: 1.4rem; }
+        .rec-actions { flex-direction: column; width: 100%; }
+        .rec-actions .btn-gold, .rec-actions .btn-outline { width: 100%; }
+        .craft-grid { grid-template-columns: 1fr; }
+        .craft-item { aspect-ratio: 4/3; }
+        .story-quote { font-size: 1.1rem; padding: 0 10px; }
+        .story-source { font-size: 0.7rem; }
+        .cart-sidebar { width: 100vw; }
+        .cart-header { padding: 20px; }
+        .cart-items-wrap { padding: 16px 20px; }
+        .cart-footer { padding: 16px 20px; }
+        .modal-box { width: 95vw; padding: 24px 16px; }
+        .toast { font-size: 0.75rem; padding: 10px 20px; white-space: normal; max-width: 90vw; }
+        .user-menu { right: -10px; }
+        .history-item { flex-direction: column; gap: 8px; }
+    }
+    
+    </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- ======================== NAV ======================== -->
+<nav class="nav">
+    <a class="nav-logo" href="#">
+        五行
+        <span>FIVE ELEMENTS</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:16px;">
+        <div id="userArea" style="position:relative;">
+            <button id="userBtn" class="user-btn" onclick="toggleUserMenu()">登录</button>
+            <div id="userMenu" class="user-menu">
+                <div class="user-menu-item" onclick="showHistory()">测算历史</div>
+                <div class="user-menu-item" onclick="logout()">退出登录</div>
+            </div>
+        </div>
+        <button class="nav-cart" onclick="toggleCart()">
+            ✦
+            <span class="cart-badge" id="cartBadge">0</span>
+        </button>
+    </div>
+</nav>
+
+<!-- ======================== HERO ======================== -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-circle"></div>
+    <div class="hero-content">
+        <p class="hero-subtitle">The Art of Balance · 御灵之道</p>
+        <h1 class="hero-title">五行<br/><em>能量</em>手串</h1>
+        <p class="hero-desc">金 · 木 · 水 · 火 · 土　与天地同频</p>
+        <div class="hero-actions">
+            <button class="btn-gold" onclick="scrollToSection('elementsSection')">探索五行</button>
+            <button class="btn-outline" onclick="scrollToSection('calcSection')">命理测算</button>
+        </div>
+    </div>
+    <div class="hero-elements">
+        <div class="hero-dot" style="background:var(--mu)" data-name="木"></div>
+        <div class="hero-dot" style="background:var(--huo)" data-name="火"></div>
+        <div class="hero-dot" style="background:var(--tu)" data-name="土"></div>
+        <div class="hero-dot" style="background:var(--jin)" data-name="金"></div>
+        <div class="hero-dot" style="background:var(--shui)" data-name="水"></div>
+    </div>
+</section>
+
+<!-- ======================== 五行展示（Tab+轮播） ======================== -->
+<section class="elements-section" id="elementsSection">
+    <div class="section-header reveal">
+        <span class="section-label">Collection</span>
+        <h2 class="section-title">五行手串系列</h2>
+        <div class="section-line"></div>
+    </div>
+    <!-- Tab 切换 -->
+    <div class="el-tabs" id="elTabs"></div>
+    <!-- 各元素的轮播面板 -->
+    <div class="el-carousels" id="elCarousels"></div>
+</section>
+
+<!-- ======================== 品牌故事 ======================== -->
+<section class="story-section">
+    <div class="story-inner reveal">
+        <blockquote class="story-quote">
+            天地之间，五行流转<br/>金木水火土，生克制化<br/>一串在腕，与命同行
+        </blockquote>
+        <p class="story-source">— 五行御灵 · 传承工艺</p>
+    </div>
+</section>
+
+<!-- ======================== 测算区 ======================== -->
+<section class="calc-section" id="calcSection">
+    <div class="calc-inner">
+        <div class="calc-text reveal">
+            <span class="label">Destiny Analysis</span>
+            <h2>测算你的<br/>五行命格</h2>
+            <p>根据出生年月日推算命盘，分析五行强弱，<br/>为你定制最适合的能量手串。</p>
+            <div class="traits">
+                <div class="trait"><span class="trait-dot"></span>五行占比分析</div>
+                <div class="trait"><span class="trait-dot"></span>缺失元素诊断</div>
+                <div class="trait"><span class="trait-dot"></span>专属手串推荐</div>
+                <div class="trait"><span class="trait-dot"></span>能量调和建议</div>
+            </div>
+        </div>
+        <div class="calc-form-wrap reveal">
+            <div class="form-row">
+                <label>出生日期 · BIRTH DATE</label>
+                <input type="date" id="birthdayInput" />
+            </div>
+            <button class="calc-btn" onclick="calculateWuxing()">
+                <span>开始测算 · CALCULATE</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ======================== 结果区 ======================== -->
+<section class="result-section" id="resultSection">
+    <div class="result-inner">
+        <div class="section-header">
+            <span class="section-label">Your Destiny</span>
+            <h2 class="section-title" id="resultTitle">命格分析</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="result-viz">
+            <div class="radar-wrap">
+                <canvas id="radarCanvas" width="300" height="300"></canvas>
+            </div>
+            <div class="result-text">
+                <div class="result-highlight" id="resultHighlight">—</div>
+                <p class="result-desc" id="resultDesc">—</p>
+                <div class="el-bars" id="elBars"></div>
+            </div>
+        </div>
+
+        <div class="recommend-wrap" id="recommendWrap">
+            <div class="rec-card-inner">
+                <div class="rec-img-wrap" id="recImgWrap">
+                    <img id="recImg" src="" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                    <div class="rec-img-placeholder" id="recImgPlaceholder" style="display:none;"></div>
+                </div>
+                <div class="rec-info">
+                    <h3 id="recName">—</h3>
+                    <p class="sub" id="recSub">—</p>
+                    <p class="rec-price">¥<span id="recPrice">—</span></p>
+                </div>
+                <div class="rec-actions">
+                    <button class="btn-gold" onclick="addRecommended()" style="padding:12px 24px;font-size:0.8rem;">加入购物车</button>
+                    <button class="btn-outline" onclick="scrollToSection('elementsSection')" style="padding:12px 24px;font-size:0.8rem;">查看全部</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======================== 工艺细节 ======================== -->
+<section class="craft-section">
+    <div class="section-header reveal">
+        <span class="section-label">Craftsmanship</span>
+        <h2 class="section-title">工艺 · 细节</h2>
+        <div class="section-line"></div>
+    </div>
+    <div class="craft-grid" id="craftGrid"></div>
+</section>
+
+<!-- ======================== FOOTER ======================== -->
+<footer class="footer">
+    <span class="footer-logo">五行 · WUXING</span>
+    <span class="footer-text">© 2026 五行御灵手串 · 专注能量与美学</span>
+</footer>
+
+<!-- ======================== 购物车 ======================== -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+        <h2>购物车</h2>
+        <button class="cart-close" onclick="toggleCart()">×</button>
+    </div>
+    <div class="cart-items-wrap" id="cartItemsWrap"></div>
+    <div class="cart-footer">
+        <div class="cart-total-row">
+            <span class="cart-total-label">合计</span>
+            <span class="cart-total-amount">¥<span id="cartTotal">0</span></span>
+        </div>
+        <button class="btn-gold" style="width:100%;padding:16px;font-size:0.9rem;letter-spacing:0.3em;" onclick="showCheckout()">结算 · CHECKOUT</button>
+    </div>
+</div>
+
+<!-- ======================== 结算模态框 ======================== -->
+<div class="modal" id="checkoutModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <h2 class="modal-title">填写收货信息</h2>
+        <p class="modal-sub">ORDER DETAILS</p>
+        <form id="checkoutForm">
+            <div class="mform-group">
+                <label>姓名 · Name</label>
+                <input type="text" id="custName" required placeholder="请输入姓名">
+            </div>
+            <div class="mform-group">
+                <label>电话 · Phone</label>
+                <input type="tel" id="custPhone" required placeholder="请输入联系电话">
+            </div>
+            <div class="mform-group">
+                <label>地址 · Address</label>
+                <input type="text" id="custAddr" required placeholder="请输入收货地址">
+            </div>
+            <button type="submit" class="btn-gold" style="width:100%;padding:16px;font-size:0.9rem;letter-spacing:0.3em;margin-top:8px;">确认下单 · CONFIRM</button>
+        </form>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ======================== 数据 ========================
+// 每个元素有多款手串，使用本地图片
+const ELEMENTS = [
+    {
+        name: '木', en: 'Wood', color: '#4a9e5c', icon: '木',
+        products: [
+            { name: '绿檀念珠', mat: '绿檀木', price: 269, img: 'img/prod-wood.png' },
+            { name: '沉香手串', mat: '沉香木', price: 399, img: 'img/prod-wood.png' },
+            { name: '紫檀手链', mat: '小叶紫檀', price: 459, img: 'img/prod-wood.png' },
+        ]
+    },
+    {
+        name: '火', en: 'Fire', color: '#c44b3a', icon: '火',
+        products: [
+            { name: '南红玛瑙', mat: '南红玛瑙', price: 289, img: 'img/prod-fire.png' },
+            { name: '朱砂手串', mat: '朱砂', price: 329, img: 'img/prod-fire.png' },
+            { name: '红珊瑚', mat: '红珊瑚', price: 469, img: 'img/prod-fire.png' },
+        ]
+    },
+    {
+        name: '土', en: 'Earth', color: '#c28c3a', icon: '土',
+        products: [
+            { name: '黄玉髓', mat: '黄玉髓', price: 279, img: 'img/prod-earth.png' },
+            { name: '蜜蜡手串', mat: '蜜蜡', price: 389, img: 'img/prod-earth.png' },
+            { name: '黄水晶', mat: '黄水晶', price: 349, img: 'img/prod-earth.png' },
+        ]
+    },
+    {
+        name: '金', en: 'Metal', color: '#c0a060', icon: '金',
+        products: [
+            { name: '黄金檀木', mat: '黄金檀', price: 299, img: 'img/prod-gold.png' },
+            { name: '白水晶', mat: '白水晶', price: 269, img: 'img/prod-gold.png' },
+            { name: '银丝手串', mat: '银丝镶嵌', price: 419, img: 'img/prod-gold.png' },
+        ]
+    },
+    {
+        name: '水', en: 'Water', color: '#3a6ec4', icon: '水',
+        products: [
+            { name: '深海蓝晶', mat: '蓝晶石', price: 319, img: 'img/prod-water.png' },
+            { name: '黑曜石', mat: '黑曜石', price: 289, img: 'img/prod-water.png' },
+            { name: '海蓝宝', mat: '海蓝宝石', price: 439, img: 'img/prod-water.png' },
+        ]
+    },
+];
+
+let cart = [];
+let currentRecommend = null;
+
+// ======================== 粒子背景 ========================
+(function() {
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+
+    function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    for (let i = 0; i < 60; i++) {
+        particles.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 1.5 + 0.3,
+            vx: (Math.random() - 0.5) * 0.15,
+            vy: -Math.random() * 0.3 - 0.1,
+            a: Math.random() * 0.6 + 0.1,
+        });
+    }
+
+    function loop() {
+        ctx.clearRect(0, 0, W, H);
+        particles.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(201,168,76,${p.a})`;
+            ctx.fill();
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+            if (p.x < 0) p.x = W;
+            if (p.x > W) p.x = 0;
+        });
+        requestAnimationFrame(loop);
+    }
+    loop();
+})();
+
+// ======================== 渲染五行Tab和轮播 ========================
+// 渲染Tab按钮
+function renderElTabs() {
+    const container = document.getElementById('elTabs');
+    ELEMENTS.forEach(function(el, idx) {
+        var tab = document.createElement('button');
+        tab.className = 'el-tab' + (idx === 0 ? ' active' : '');
+        tab.style.setProperty('--tab-color', el.color);
+        tab.innerHTML = '<span style="margin-right:6px;">' + el.icon + '</span>' + el.en;
+        tab.onclick = function() { switchElTab(idx); };
+        container.appendChild(tab);
+    });
+}
+
+// 渲染各元素的轮播面板
+function renderElCarousels() {
+    const container = document.getElementById('elCarousels');
+    ELEMENTS.forEach(function(el, idx) {
+        var panel = document.createElement('div');
+        panel.className = 'el-carousel' + (idx === 0 ? ' active' : '');
+        panel.setAttribute('data-idx', idx);
+
+        el.products.forEach(function(prod) {
+            var card = document.createElement('div');
+            card.className = 'prod-card';
+            card.innerHTML = `
+                <div class="prod-img-wrap">
+                    <img src="${prod.img}" alt="${prod.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                    <div class="prod-no-img" style="display:none;color:${el.color};">${el.icon}</div>
+                </div>
+                <div class="prod-info">
+                    <div class="prod-name" style="color:${el.color};">${prod.name}</div>
+                    <div class="prod-mat">${prod.mat}</div>
+                    <div class="prod-bottom">
+                        <span class="prod-price">¥${prod.price}</span>
+                        <button class="prod-add-btn" onclick="addProductToCart('${el.name}','${prod.name}',${prod.price},'${el.icon}','${el.color}')">加入购物车</button>
+                    </div>
+                </div>
+            `;
+            panel.appendChild(card);
+        });
+
+        container.appendChild(panel);
+    });
+}
+
+// 切换Tab
+function switchElTab(idx) {
+    var tabs = document.querySelectorAll('.el-tab');
+    var carousels = document.querySelectorAll('.el-carousel');
+    tabs.forEach(function(t, i) {
+        t.classList.toggle('active', i === idx);
+    });
+    carousels.forEach(function(c, i) {
+        c.classList.toggle('active', i === idx);
+    });
+}
+
+// 添加指定产品到购物车
+function addProductToCart(elName, prodName, price, icon, color) {
+    var key = elName + '-' + prodName;
+    var exist = cart.find(function(i) { return i.key === key; });
+    if (exist) {
+        exist.qty++;
+    } else {
+        cart.push({
+            key: key,
+            name: elName,
+            prodName: prodName,
+            price: price,
+            icon: icon,
+            color: color,
+            qty: 1,
+            mat: ''
+        });
+    }
+    updateCartUI();
+    showToast(prodName + ' 已加入购物车');
+}
+
+// 兼容旧代码：添加整个元素到购物车（默认第一款产品）
+function addToCart(elName) {
+    var el = ELEMENTS.find(function(e) { return e.name === elName; });
+    if (el && el.products && el.products[0]) {
+        addProductToCart(elName, el.products[0].name, el.products[0].price, el.icon, el.color);
+    }
+}
+
+// ======================== 渲染工艺区 ========================
+function renderCraft() {
+    const grid = document.getElementById('craftGrid');
+    const crafts = [
+        { num: '01', name: '选料', desc: '甄选天然原石', bg: 'craft-color-1' },
+        { num: '02', name: '打磨', desc: '手工研磨抛光', bg: 'craft-color-2' },
+        { num: '03', name: '穿制', desc: '丝线精心穿制', bg: 'craft-color-3' },
+        { num: '04', name: '成品', desc: '开光祈福加持', bg: 'craft-color-4' },
+    ];
+    crafts.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'craft-item';
+        div.innerHTML = `
+            <div class="craft-item-bg ${c.bg}"></div>
+            <div class="craft-overlay"></div>
+            <div class="craft-label">
+                <div class="craft-num">${c.num}</div>
+                <div class="craft-name">${c.name}</div>
+                <div class="craft-desc">${c.desc}</div>
+            </div>
+        `;
+        grid.appendChild(div);
+    });
+}
+
+// ======================== 购物车 ========================
+function addToCart(elName) {
+    const el = ELEMENTS.find(e => e.name === elName);
+    const exist = cart.find(i => i.name === elName);
+    if (exist) { exist.qty++; }
+    else { cart.push({ ...el, qty: 1 }); }
+    updateCartUI();
+    showToast(`${elName}行手串已加入购物车`);
+}
+
+function updateQty(keyOrName, delta) {
+    const item = cart.find(i => (i.key && i.key === keyOrName) || i.name === keyOrName);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) cart = cart.filter(i => i !== item);
+    updateCartUI();
+}
+
+function updateCartUI() {
+    const badge = document.getElementById('cartBadge');
+    const wrap = document.getElementById('cartItemsWrap');
+    const total = document.getElementById('cartTotal');
+    let count = 0, sum = 0;
+    wrap.innerHTML = '';
+
+    if (cart.length === 0) {
+        wrap.innerHTML = '<p style="text-align:center;color:var(--text-muted);font-size:0.8rem;letter-spacing:0.2em;padding:40px 0;">购物车为空</p>';
+    }
+
+    cart.forEach(item => {
+        count += item.qty;
+        sum += item.price * item.qty;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        var displayName = item.prodName ? (item.name + '·' + item.prodName) : (item.name + '行手串');
+        div.innerHTML = `
+            <div class="cart-item-icon" style="border-color:${item.color}33;color:${item.color};">${item.icon}</div>
+            <div style="flex:1;">
+                <div class="cart-item-name">${displayName}</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.1em;margin-top:4px;">${item.mat || ''}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+                <span class="cart-item-price">¥${item.price * item.qty}</span>
+                <div class="cart-qty-wrap">
+                    <button class="qty-btn" onclick="updateQty('${item.key || item.name}',-1)">−</button>
+                    <span style="font-size:0.85rem;min-width:20px;text-align:center;">${item.qty}</span>
+                    <button class="qty-btn" onclick="updateQty('${item.key || item.name}',1)">+</button>
+                </div>
+            </div>
+        `;
+        wrap.appendChild(div);
+    });
+
+    badge.textContent = count;
+    total.textContent = sum;
+}
+
+function toggleCart() {
+    document.getElementById('cartSidebar').classList.toggle('active');
+    document.getElementById('cartOverlay').classList.toggle('active');
+}
+
+// ======================== 五行测算 ========================
+function calculateWuxing() {
+    const val = document.getElementById('birthdayInput').value;
+    if (!val) { showToast('请先选择出生日期'); return; }
+
+    const d = new Date(val);
+    const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+
+    // 简单测算逻辑：基于数字推算五行比例
+    const seed = y + m + day;
+    const scores = {
+        '木': ((seed * 7 + 3) % 5) + 1,
+        '火': ((seed * 11 + 7) % 5) + 1,
+        '土': ((seed * 13 + 5) % 5) + 1,
+        '金': ((seed * 17 + 9) % 5) + 1,
+        '水': ((seed * 19 + 11) % 5) + 1,
+    };
+
+    let weakest = '木', minV = 99;
+    let strongest = '木', maxV = 0;
+    Object.entries(scores).forEach(([k, v]) => {
+        if (v < minV) { minV = v; weakest = k; }
+        if (v > maxV) { maxV = v; strongest = k; }
+    });
+
+    const total = Object.values(scores).reduce((a, b) => a + b, 0);
+    const pct = {};
+    Object.entries(scores).forEach(([k, v]) => { pct[k] = Math.round(v / total * 100); });
+
+    // 更新结果区
+    document.getElementById('resultHighlight').textContent = `${strongest}旺 · ${weakest}弱`;
+    document.getElementById('resultDesc').textContent =
+        `命盘显示您${strongest}行偏旺，${weakest}行相对不足。建议佩戴${weakest}行手串以补充能量，促进五行平衡，增强整体运势。`;
+
+    // 条形图
+    const bars = document.getElementById('elBars');
+    bars.innerHTML = '';
+    ELEMENTS.forEach(e => {
+        const p = pct[e.name];
+        const row = document.createElement('div');
+        row.className = 'el-bar-row';
+        row.innerHTML = `
+            <span class="el-bar-label" style="color:${e.color}">${e.name}</span>
+            <div class="el-bar-track">
+                <div class="el-bar-fill" style="background:${e.color};width:${p}%"></div>
+            </div>
+            <span class="el-bar-val">${p}%</span>
+        `;
+        bars.appendChild(row);
+        setTimeout(() => {
+            row.querySelector('.el-bar-fill').style.transform = 'scaleX(1)';
+        }, 100);
+    });
+
+    // 雷达图
+    drawRadar(pct);
+
+    // 推荐（使用第一个产品）
+    const rec = ELEMENTS.find(e => e.name === weakest);
+    currentRecommend = rec;
+    var recProd = rec.products && rec.products[0];
+    document.getElementById('recName').textContent = (recProd ? recProd.name : (rec.name + '行手串 · 平衡款'));
+    document.getElementById('recSub').textContent = recProd ? (recProd.mat + '精制 · 补' + rec.name + '调和') : (rec.name + '行 · 平衡能量');
+    document.getElementById('recPrice').textContent = recProd ? recProd.price : rec.price;
+    // 设置图片
+    var recImg = document.getElementById('recImg');
+    var recPh = document.getElementById('recImgPlaceholder');
+    if (recProd && recProd.img) {
+        recImg.src = recProd.img;
+        recImg.style.display = '';
+        recPh.style.display = 'none';
+    } else {
+        recImg.style.display = 'none';
+        recPh.style.display = 'flex';
+        recPh.textContent = rec.icon;
+        recPh.style.color = rec.color;
+    }
+
+    document.getElementById('resultSection').classList.add('active');
+    setTimeout(() => {
+        document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+}
+
+// ======================== 雷达图 ========================
+function drawRadar(pct) {
+    const canvas = document.getElementById('radarCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.38;
+    ctx.clearRect(0, 0, W, H);
+
+    const labels = ELEMENTS.map(e => e.name);
+    const colors = ELEMENTS.map(e => e.color);
+    const vals = ELEMENTS.map(e => pct[e.name] / 100);
+    const N = labels.length;
+
+    // 网格
+    for (let r = 1; r <= 4; r++) {
+        ctx.beginPath();
+        for (let i = 0; i <= N; i++) {
+            const angle = (i / N) * Math.PI * 2 - Math.PI / 2;
+            const x = cx + R * (r / 4) * Math.cos(angle);
+            const y = cy + R * (r / 4) * Math.sin(angle);
+            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = 'rgba(201,168,76,0.1)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    // 轴线
+    for (let i = 0; i < N; i++) {
+        const angle = (i / N) * Math.PI * 2 - Math.PI / 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + R * Math.cos(angle), cy + R * Math.sin(angle));
+        ctx.strokeStyle = 'rgba(201,168,76,0.12)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    // 数据区域
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+        const angle = (i / N) * Math.PI * 2 - Math.PI / 2;
+        const x = cx + R * vals[i] * Math.cos(angle);
+        const y = cy + R * vals[i] * Math.sin(angle);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(201,168,76,0.12)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(201,168,76,0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // 数据点
+    for (let i = 0; i < N; i++) {
+        const angle = (i / N) * Math.PI * 2 - Math.PI / 2;
+        const x = cx + R * vals[i] * Math.cos(angle);
+        const y = cy + R * vals[i] * Math.sin(angle);
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = colors[i];
+        ctx.fill();
+    }
+
+    // 标签
+    ctx.font = '16px Noto Serif SC, serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (let i = 0; i < N; i++) {
+        const angle = (i / N) * Math.PI * 2 - Math.PI / 2;
+        const x = cx + (R + 24) * Math.cos(angle);
+        const y = cy + (R + 24) * Math.sin(angle);
+        ctx.fillStyle = colors[i];
+        ctx.fillText(labels[i], x, y);
+    }
+}
+
+// ======================== 推荐加购 ========================
+function addRecommended() {
+    if (!currentRecommend || !currentRecommend.products || !currentRecommend.products[0]) return;
+    var prod = currentRecommend.products[0];
+    addProductToCart(currentRecommend.name, prod.name, prod.price, currentRecommend.icon, currentRecommend.color);
+}
+
+// ======================== 结算 ========================
+function showCheckout() {
+    if (cart.length === 0) { showToast('购物车还是空的'); return; }
+    document.getElementById('checkoutModal').classList.add('active');
+    document.getElementById('cartSidebar').classList.remove('active');
+    document.getElementById('cartOverlay').classList.remove('active');
+}
+
+function closeModal() {
+    document.getElementById('checkoutModal').classList.remove('active');
+}
+
+document.getElementById('checkoutForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    showToast('✦ 订单已提交，感谢惠顾');
+    cart = [];
+    updateCartUI();
+    closeModal();
+    document.getElementById('checkoutForm').reset();
+});
+
+// ======================== 工具 ========================
+function scrollToSection(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('active');
+    setTimeout(() => t.classList.remove('active'), 2800);
+}
+
+// ======================== 滚动揭示 ========================
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ======================== Init ========================
+renderElTabs();
+renderElCarousels();
+renderCraft();
+updateCartUI();
+</script>
+</body>
+</html>
